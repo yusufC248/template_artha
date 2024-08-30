@@ -257,12 +257,13 @@ class Template {
       context: ctx,
       barrierDismissible: false,
       builder: (BuildContext context) => CupertinoAlertDialog(
-        title: const Text('Terjadi Kesalahan'),
+        title: const Text(
+          'Terjadi Kesalahan',
+          style: TextStyle(color: Colors.red),
+        ),
         content: Text(pesan),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
-            /// This parameter indicates this action is the default,
-            /// and turns the action's text to bold text.
             isDefaultAction: true,
             onPressed: () {
               Navigator.pop(context);
