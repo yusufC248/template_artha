@@ -11,13 +11,8 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
-
 class Template {
+  late SharedPreferences logindata;
   Color bgColor = const Color(0xfffafbfe);
   Color putih = Colors.white;
   Color hitam = Colors.black;
@@ -27,70 +22,6 @@ class Template {
   Color biruMuda = const Color(0xff2eb0cd);
   Color biruGelap = const Color(0xff0260c0);
   int miliseconds = 15000;
-
-  TextStyle small(BuildContext context) {
-    return Theme.of(context).textTheme.bodySmall!;
-  }
-
-  TextStyle medium(BuildContext context) {
-    return Theme.of(context).textTheme.bodyMedium!;
-  }
-
-  TextStyle large(BuildContext context) {
-    return Theme.of(context).textTheme.bodyLarge!;
-  }
-
-  late SharedPreferences logindata;
-
-  void showLoadingDialog(BuildContext context, String? label) {
-    Size size = MediaQuery.of(context).size;
-    showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (_) {
-          return Dialog(
-            insetPadding: EdgeInsets.only(
-                left: size.width * 0.35,
-                right: size.width * 0.35,
-                top: 10,
-                bottom: 10),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                    width: size.width * 0.3,
-                    height: size.height * 0.15,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Center(
-                            child: CupertinoActivityIndicator(
-                          color: Colors.grey,
-                        )),
-                        Visibility(
-                            visible: label != null,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 5),
-                              child: Text(
-                                "$label",
-                                textAlign: TextAlign.center,
-                              ),
-                            ))
-                      ],
-                    )),
-              ],
-            ),
-          );
-        });
-  }
-
-  void hideLoadingDialog(BuildContext context) {
-    Navigator.of(context).pop(); // Close the dialog
-  }
 
   Future<dynamic> apiCall<T>(
       String linkApi,
@@ -149,6 +80,56 @@ class Template {
     return response;
   }
 
+  void showLoadingDialog(BuildContext context, String? label) {
+    Size size = MediaQuery.of(context).size;
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) {
+          return Dialog(
+            insetPadding: EdgeInsets.only(
+                left: size.width * 0.35,
+                right: size.width * 0.35,
+                top: 10,
+                bottom: 10),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                    width: size.width * 0.3,
+                    height: size.height * 0.15,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Center(
+                            child: CupertinoActivityIndicator(
+                          color: Colors.grey,
+                        )),
+                        Visibility(
+                            visible: label != null,
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 5),
+                              child: Text(
+                                "$label",
+                                textAlign: TextAlign.center,
+                              ),
+                            ))
+                      ],
+                    )),
+              ],
+            ),
+          );
+        });
+  }
+
+  void hideLoadingDialog(BuildContext context) {
+    Navigator.of(context).pop(); // Close the dialog
+  }
+
   Future<String?> getString(String value) async {
     logindata = await SharedPreferences.getInstance();
     return logindata.getString(value);
@@ -177,44 +158,6 @@ class Template {
   Future<bool> setBool(String nama, bool value) async {
     logindata = await SharedPreferences.getInstance();
     return logindata.setBool(nama, value);
-  }
-
-  void topup(BuildContext context) {
-    showDialog(
-        barrierDismissible: true,
-        context: context,
-        builder: (_) {
-          return Dialog(
-            insetPadding: const EdgeInsets.only(
-                left: 100, right: 100, top: 10, bottom: 10),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                    width: 200,
-                    height: 90,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "COMING SOON",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text("OK"))
-                      ],
-                    )),
-              ],
-            ),
-          );
-        });
   }
 
   Widget textField(TextEditingController cont, TextInputType type, Widget? icon,
@@ -284,17 +227,12 @@ class Template {
         content: child,
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
-            /// This parameter indicates this action is the default,
-            /// and turns the action's text to bold text.
-
             onPressed: () {
               Navigator.pop(context);
             },
             child: const Text('Cancel'),
           ),
           CupertinoDialogAction(
-            /// This parameter indicates this action is the default,
-            /// and turns the action's text to bold text.
             isDefaultAction: true,
             onPressed: onsubmit,
             child: const Text('OK'),
@@ -309,6 +247,20 @@ class Template {
         locale: 'id_ID', symbol: 'Rp. ', decimalDigits: 0);
 
     return currencyFormat.format(amount);
+  }
+
+  Future<void> requestPemission(List<String> giveAccess) async {
+    final List<Permission> permissions = giveAccess.map((permission) {
+      return Permission.values.firstWhere((permissionEnum) =>
+          permissionEnum.toString().split('.')[1] == permission);
+    }).toList();
+
+    await Future.forEach(permissions, (permission) async {
+      final PermissionStatus status = await permission.request();
+      if (status == PermissionStatus.denied) {
+        await requestPemission([permission.toString().split('.')[1]]);
+      }
+    });
   }
 
   String greeting() {
@@ -333,10 +285,8 @@ class Template {
                 ? "Permintaan Izin Lokasi"
                 : "Permintaan Izin Kamera"),
             content: Text(label == "location"
-                    ? "Jempolku membutuhkan akses lokasi untuk melakukan absensi"
-                    : "Jempolku membutuhkan akses kamera untuk melakukan absensi"
-                //"Allow access to $label"
-                ),
+                ? "Jempolku membutuhkan akses lokasi untuk melakukan absensi"
+                : "Jempolku membutuhkan akses kamera untuk melakukan absensi"),
             actions: <CupertinoDialogAction>[
               CupertinoDialogAction(
                   onPressed: () => Navigator.pop(context),
@@ -422,17 +372,53 @@ class Template {
     );
   }
 
-  Future<void> requestPemission(List<String> giveAccess) async {
-    final List<Permission> permissions = giveAccess.map((permission) {
-      return Permission.values.firstWhere((permissionEnum) =>
-          permissionEnum.toString().split('.')[1] == permission);
-    }).toList();
+  TextStyle small(BuildContext context) {
+    return Theme.of(context).textTheme.bodySmall!;
+  }
 
-    await Future.forEach(permissions, (permission) async {
-      final PermissionStatus status = await permission.request();
-      if (status == PermissionStatus.denied) {
-        await requestPemission([permission.toString().split('.')[1]]);
-      }
-    });
+  TextStyle medium(BuildContext context) {
+    return Theme.of(context).textTheme.bodyMedium!;
+  }
+
+  TextStyle large(BuildContext context) {
+    return Theme.of(context).textTheme.bodyLarge!;
+  }
+
+  void topup(BuildContext context) {
+    showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (_) {
+          return Dialog(
+            insetPadding: const EdgeInsets.only(
+                left: 100, right: 100, top: 10, bottom: 10),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                    width: 200,
+                    height: 90,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "COMING SOON",
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text("OK"))
+                      ],
+                    )),
+              ],
+            ),
+          );
+        });
   }
 }

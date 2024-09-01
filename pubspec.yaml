@@ -1,6 +1,6 @@
 name: artha_template
 description: "A new Flutter package project."
-version: 0.0.6
+version: 0.0.7
 homepage:
 
 environment:
@@ -9,7 +9,6 @@ environment:
 
 dependencies:
 
-  dio: ^5.5.0+1
   flutter:
     sdk: flutter
   http:
