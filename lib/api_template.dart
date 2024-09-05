@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -26,6 +27,7 @@ Future<ApiResponse<T>> fetchDataAndHandleError<T>(
     var url = baseUrl;
     if (endpoint != 'null' && endpoint != '') {
       url = '$baseUrl/$endpoint';
+      log(url);
     }
     final response = await client
         .post(
@@ -80,6 +82,7 @@ Future<ApiResponse<T>> fetchDataAndHandleErrorGet<T>(
   Duration timeout = const Duration(seconds: 45),
 }) async {
   try {
+    log('$baseUrl/$endpoint');
     final response = await client
         .get(
           Uri.parse('$baseUrl/$endpoint'),
@@ -134,6 +137,7 @@ Future<ApiResponse<T>> fetchDataAndHandleErrorGambar<T>(
   Duration timeout = const Duration(seconds: 45),
 }) async {
   try {
+    log('$baseUrl/$endpoint');
     var request =
         http.MultipartRequest('POST', Uri.parse('$baseUrl/$endpoint'));
 
