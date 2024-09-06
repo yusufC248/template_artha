@@ -218,6 +218,43 @@ class Template {
     );
   }
 
+  void iosDialogSuccess(ctx, String pesan, VoidCallback onOkPressed) {
+    showCupertinoModalPopup<void>(
+      context: ctx,
+      barrierDismissible: false,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              CupertinoIcons.check_mark_circled_solid, // Verified icon
+              color: Colors.green,
+              size: 50.0, // Adjust size as needed
+            ),
+            const SizedBox(height: 10), // Spacing between icon and text
+            const Text(
+              'Terimakasih',
+              style:
+                  TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10), // Spacing between title and message
+            Text(pesan),
+          ],
+        ),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () {
+              Navigator.pop(context);
+              onOkPressed();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void iosDialogKonfirmasi(ctx, Widget child, Function()? onsubmit) {
     showCupertinoModalPopup<void>(
       context: ctx,
